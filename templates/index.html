@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TaskFlow - Premium Task Management</title>
+<meta name="theme-color" content="#A51C30">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%23A51C30'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+:root {
+    /* Harvard-inspired palette */
+    --harvard-crimson: #A51C30;
+    --harvard-dark: #6b0f18;
+    --paper-cream: #fff8f6;
+    --primary-color: var(--harvard-dark);
+    --accent-1: var(--harvard-crimson);
+    --accent-2: #7f1018;
+    --accent-3: #f2e6e7;
+    --accent-4: #b31b2b;
+    --ink: #111111;
+    --muted: #667085;
+    --card-bg: #fffdfb;
+    /* Compatibility variables used by original styles */
+    --border-color: rgba(17,17,17,0.06);
+    --success-color: #1f7a3a;
+    --warning-color: #bf6f00;
+    --danger-color: #9b1b2b;
+    --accent-color: var(--accent-1);
+    --accent-light: #c94a4a;
+    --text-muted: var(--muted);
+    --secondary-color: #2b2f36;
+}
+
+* { box-sizing: border-box; margin:0; padding:0 }
+
+html,body{ height:100%; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: linear-gradient(180deg,#fff8f0 0%, #f3f4f6 100%); color:var(--ink)}
+/* Typographic scale and base spacing for a cleaner academic feel */
+html { font-size: 16px }
+body { line-height: 1.55; color: #111 }
+
+body{ position:relative; min-height:100vh; display:flex; flex-direction:column }
+
+/* Artistic background (abstract shapes like a Picasso canvas) */
+.art-bg{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.16 }
+.art-bg svg{ width:100%; height:100%; display:block }
+
+.navbar-custom{ position:sticky; top:0; z-index:40; background:transparent; padding:1.25rem 2rem }
+.navbar-brand{ font-weight:800; font-size:1.15rem; color:var(--accent-1); display:flex; gap:0.5rem; align-items:center; font-family: 'Crimson Text', serif }
+.navbar-subtitle{ font-family: 'Merriweather', serif; font-size:0.78rem; color:var(--muted); margin-left:0.4rem }
+.brand-icon{ transform: rotate(-18deg); color:var(--accent-1) }
+
+.container-main{ position:relative; z-index:10; max-width:980px; margin:0 auto; padding:2rem 1.5rem }
+
+.section-header{ margin-bottom:2rem }
+.section-title{ font-family: 'Crimson Text', 'Playfair Display', serif; font-size:1.95rem; color:var(--primary-color); display:flex; gap:0.8rem; align-items:center }
+.section-title i{ color:var(--accent-1); transform:translateY(-2px); font-size:1.2rem }
+.section-subtitle{ color:var(--muted); margin-top:0.25rem }
+
+/* Stats cards with playful shapes */
+.stats-container{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1rem; margin-bottom:1.5rem; align-items:stretch }
+.stat-card{ background:linear-gradient(135deg, var(--card-bg), #fff); border-radius:0.75rem; padding:1.25rem; box-shadow: 6px 8px 0 rgba(0,0,0,0.03); border-left:6px solid var(--accent-2) }
+.stat-card{ min-height:72px }
+.stat-number{ font-weight:800; color:var(--accent-4); font-size:1.6rem }
+.stat-label{ color:var(--muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.4px }
+
+/* Input form with irregular corner and paint stroke accent */
+.input-form{ background:linear-gradient(180deg,#fffefb, #fff8f0); padding:1.6rem; border-radius:0.9rem; border:1px solid rgba(0,0,0,0.03); box-shadow: 0 8px 30px rgba(11,17,33,0.04) }
+.input-form{ transition:box-shadow .28s ease }
+.input-form:focus-within{ box-shadow: 0 18px 40px rgba(0,0,0,0.06) }
+.input-row{ display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:1rem; align-items:end }
+.form-label{ font-weight:700; font-size:0.78rem; color:var(--ink); font-family: 'Amatic SC', cursive }
+.form-control, .form-select{ border-radius:0.6rem; border:1px dashed rgba(0,0,0,0.06); padding:0.85rem 1rem }
+.btn-submit{ background:linear-gradient(90deg,var(--accent-1),var(--accent-4)); color:white; padding:0.85rem 1.2rem; border-radius:0.6rem; font-weight:700; box-shadow: 0 6px 18px rgba(0,0,0,0.08); border: none }
+.btn-submit{ padding:0.9rem 1.25rem; font-size:0.95rem }
+.btn-submit:hover{ box-shadow:0 12px 30px rgba(0,0,0,0.12) }
+
+/* Tasks grid - cards feel like cut-paper/brush strokes */
+.tasks-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem }
+.task-card{ position:relative; padding:1.4rem; background:linear-gradient(180deg,#fffef8,#fffdf6); border-radius:14px; box-shadow: 12px 14px 0 rgba(0,0,0,0.03); overflow:visible; z-index:5; border:1px solid rgba(0,0,0,0.04); clip-path: polygon(0 0,100% 6%,100% 100%,0% 94%); transition:transform .28s ease, box-shadow .28s ease }
+.task-card::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:6px; background:linear-gradient(180deg,var(--accent-2), transparent); border-radius:6px 0 0 6px }
+.task-title{ font-family: 'Crimson Text', serif; font-size:1.18rem; font-weight:600; color:var(--primary-color); line-height:1.4; margin-bottom:0.45rem }
+.task-card::after{ content:''; position:absolute; width:120px; height:120px; right:-30px; top:-30px; background:linear-gradient(135deg,var(--accent-2),var(--accent-1)); transform:rotate(20deg); border-radius:18px; opacity:0.85; mix-blend-mode:multiply }
+.task-card:hover{ transform:translateY(-8px); box-shadow: 28px 36px 40px rgba(0,0,0,0.06) }
+.task-card.completed{ opacity:0.6; filter:grayscale(.15) }
+
+.task-title{ font-family: 'Amatic SC', cursive; font-size:1.25rem; color:var(--ink); line-height:1.2 }
+.task-due-date, .task-priority{ color:var(--muted); font-weight:700; font-size:0.8rem; letter-spacing:0.3px }
+
+.days-remaining{ font-weight:800; padding:0.45rem 0.7rem; border-radius:0.5rem; text-transform:uppercase }
+.days-normal{ background:#dff5e8; color:#0d4f2e; font-weight:800 }
+.days-urgent{ background:#ffd9a8; color:#8b4f02; font-weight:800 }
+.days-today{ background:#fff4a6; color:#664d00; font-weight:800 }
+.days-overdue{ background:#ffcce5; color:#7d1f3f; font-weight:800 }
+
+.task-actions{ display:flex; gap:0.6rem; margin-top:1rem }
+.btn-action{ padding:0.55rem 0.75rem; border-radius:8px; font-weight:700; font-size:0.85rem }
+.btn-action i{ margin-right:0.45rem }
+
+@media (max-width:768px){ .input-row{ grid-template-columns:1fr } .tasks-grid{ grid-template-columns:1fr } .container-main{ padding:1.25rem } }
+
+/* keep modals visible above artistic bg */
+.modal{ z-index:9999 }
+
+/* Priority badges */
+.priority-low { background-color: #dcfce7; color: #166534 }
+.priority-medium { background-color: #fed7aa; color: #92400e }
+.priority-high { background-color: #fee2e2; color: #7c2d12 }
+
+/* Task actions and buttons (kept compatible with original styles) */
+.task-actions { display:flex; gap:0.6rem; margin-top:auto; padding-top:1.25rem; border-top:1px solid var(--border-color) }
+.btn-action { flex:1; padding:0.6rem 0.75rem; border:1.5px solid transparent; border-radius:0.4rem; font-size:0.75rem; font-weight:700; cursor:pointer; transition:all .25s ease; text-transform:uppercase; letter-spacing:0.3px; display:flex; align-items:center; justify-content:center; gap:0.4rem }
+.btn-complete { background-color:#f1fbf6; color:var(--success-color); border-color:transparent }
+.btn-complete:hover { background-color:var(--success-color); color:white; transform:translateY(-1px); box-shadow:0 4px 8px rgba(46,125,50,0.18) }
+.btn-edit { background-color:#fff7f8; color:var(--accent-4); border-color:transparent }
+.btn-edit:hover { background:var(--accent-3); color:var(--primary-color); transform:translateY(-1px); box-shadow:0 6px 14px rgba(0,0,0,0.06) }
+.btn-delete { background-color:#fef2f2; color:var(--danger-color); border-color:transparent }
+.btn-delete:hover { background-color:var(--danger-color); color:white; transform:translateY(-1px); box-shadow:0 4px 8px rgba(198,40,40,0.14) }
+
+/* Empty state */
+.empty-state { text-align:center; padding:4rem 2rem; background:white; border-radius:0.75rem; border:2px dashed var(--border-color) }
+.empty-state { text-align:center; padding:3.5rem 2rem; background:linear-gradient(180deg,#fff,#fffaf9); border-radius:0.75rem; border:1px dashed rgba(0,0,0,0.04); display:flex; flex-direction:column; align-items:center; gap:0.8rem }
+.empty-state-illustration{ width:160px; height:100px }
+.empty-state-icon{ font-size:2.6rem; color:#e5e1df; margin-bottom:0 }
+.empty-state-title{ font-size:1.35rem; font-weight:700; color:var(--primary-color); margin-bottom:0 }
+.empty-state-text{ color:var(--text-muted); font-size:0.95rem; max-width:440px }
+
+/* Modal tweaks */
+.modal-content{ border:none; border-radius:0.75rem; box-shadow:0 25px 50px rgba(0,0,0,0.15) }
+.modal-dialog{ max-width:760px }
+.modal-header{ background:linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color:white; border-radius:0.75rem 0.75rem 0 0; border:none; padding:1.25rem 1.5rem }
+.modal-body{ padding:1.25rem 1.5rem }
+.modal-footer{ padding:1rem 1.25rem; background:#fffaf9; border-top:1px solid rgba(0,0,0,0.04) }
+.btn-primary-modal{ background:linear-gradient(135deg,var(--accent-1),var(--accent-4)); border:none; color:white }
+.modal-title{ font-weight:700; font-size:1.05rem; letter-spacing:0.2px }
+
+/* Status indicators */
+.status-indicator{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:0.5rem }
+.status-low{ background-color:var(--success-color) }
+.status-medium{ background-color:var(--warning-color) }
+.status-high{ background-color:var(--danger-color) }
+
+/* Scrollbar Styling */
+::-webkit-scrollbar{ width:8px; height:8px }
+::-webkit-scrollbar-track{ background:transparent }
+::-webkit-scrollbar-thumb{ background:var(--border-color); border-radius:4px }
+::-webkit-scrollbar-thumb:hover{ background:var(--text-muted) }
+
+</style>
+</head>
+<body>
+<!-- Fixes for overlapping text: stronger spacing and alignment overrides -->
+<style>
+    .task-header{ display:flex; align-items:center; gap:1rem; margin-bottom:0.9rem }
+    .task-checkbox{ flex-shrink:0; width:20px; height:20px; margin:0.15rem 0.6rem 0 0; cursor:pointer; accent-color:var(--success-color) }
+    .task-title{ line-height:1.45; margin-bottom:0.55rem }
+    .task-meta{ gap:0.9rem; margin-bottom:1rem }
+    .task-actions{ margin-top:1.25rem }
+    @media (max-width:768px){ .task-title{ font-size:1.18rem } }
+</style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<div class="navbar-custom">
+    <div style="max-width: 1100px; margin: 0 auto;">
+        <div class="navbar-brand">
+            <i class="fas fa-check-circle brand-icon"></i>TaskFlow
+        </div>
+    </div>
+</div>
+
+<!-- Artistic background SVG (abstract, Picasso-like shapes) -->
+<div class="art-bg" aria-hidden="true">
+    <svg viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0%" stop-color="#fff6f6" />
+                <stop offset="100%" stop-color="var(--harvard-crimson)" />
+            </linearGradient>
+            <linearGradient id="g2" x1="0" x2="1">
+                <stop offset="0%" stop-color="#fff" />
+                <stop offset="100%" stop-color="#f6e6e7" />
+            </linearGradient>
+        </defs>
+        <g opacity="0.95">
+            <path d="M0 140 C240 60, 420 220, 660 140 C920 50, 1120 220, 1440 140 L1440 0 L0 0 Z" fill="url(#g1)"/>
+            <path d="M0 420 C180 520, 420 360, 700 420 C980 480, 1220 360, 1440 420 L1440 800 L0 800 Z" fill="url(#g2)" opacity="0.95"/>
+            <circle cx="1180" cy="140" r="72" fill="#fff8f6" opacity="0.95"/>
+        </g>
+    </svg>
+</div>
+
+<!-- Main Content -->
+<div class="container-main">
+    <!-- Header Section -->
+    <div class="section-header">
+        <h1 class="section-title">
+            <i class="fas fa-tasks" style="color: var(--accent-color);"></i>
+            My Tasks
+        </h1>
+        <p class="section-subtitle">Stay organized and productive with TaskFlow</p>
+    </div>
+
+    <!-- Statistics Section -->
+    {% if tasks %}
+    {% set total = tasks|length %}
+    {% set completed = tasks|selectattr('completed')|list|length %}
+    {% set high_priority = tasks|selectattr('priority', 'equalto', 'High')|list|length %}
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-number">{{ total }}</div>
+            <div class="stat-label">Total Tasks</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ completed }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total - completed }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ high_priority }}</div>
+            <div class="stat-label">High Priority</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Add Task Form -->
+    <form action="{{ url_for('add') }}" method="POST" class="input-form">
+        <div class="input-row">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-pencil-alt"></i> Task Description
+                </label>
+                <input type="text" name="content" class="form-control" placeholder="Add a new task..." required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-flag"></i> Priority
+                </label>
+                <select name="priority" class="form-select" required>
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-calendar"></i> Due Date
+                </label>
+                <input type="date" name="due_date" class="form-control date-picker-input">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn-submit" aria-label="Add task">
+                    <i class="fas fa-plus-circle" aria-hidden="true"></i> Add Task
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tasks Grid -->
+    <div class="tasks-grid">
+        {% if tasks %}
+            {% for task in tasks %}
+            <div class="task-card {% if task.completed %}completed{% endif %}">
+                <div class="task-header">
+                    <a href="{{ url_for('complete', id=task.id) }}" style="text-decoration: none; color: inherit;">
+                        <input type="checkbox" class="task-checkbox" {% if task.completed %}checked{% endif %}>
+                    </a>
+                    <div class="task-content">
+                        <div class="task-title">{{ task.content }}</div>
+                    </div>
+                </div>
+
+                <div class="task-meta">
+                    {% if task.due_date %}
+                    <div class="task-due-date">
+                        <i class="fas fa-calendar-alt" style="color: #a0aec0;"></i>
+                        {{ task.due_date }}
+                    </div>
+                    <div>
+                        {% if task.days_remaining is not none %}
+                            {% if task.status == "overdue" %}
+                                <span class="days-remaining days-overdue">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ - task.days_remaining }} day{{ 's' if - task.days_remaining != 1 else '' }} overdue
+                                </span>
+                            {% elif task.status == "today" %}
+                                <span class="days-remaining days-today">
+                                    <i class="fas fa-clock"></i>
+                                    Due Today
+                                </span>
+                            {% elif task.status == "urgent" %}
+                                <span class="days-remaining days-urgent">
+                                    <i class="fas fa-fire"></i>
+                                    {{ task.days_remaining }} day{{ 's' if task.days_remaining != 1 else '' }} left
+                                </span>
+                            {% else %}
+                                <span class="days-remaining days-normal">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    {{ task.days_remaining }} day{{ 's' if task.days_remaining != 1 else '' }} left
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <span class="task-priority priority-{{ task.priority.lower() }}">
+                            <span class="status-indicator status-{{ task.priority.lower() }}"></span>
+                            {{ task.priority }} Priority
+                        </span>
+                    </div>
+                </div>
+
+                <div class="task-actions">
+                    <a href="{{ url_for('complete', id=task.id) }}" class="btn-action btn-complete" aria-label="Toggle complete" aria-pressed="{{ 'true' if task.completed else 'false' }}">
+                        <i class="fas fa-check" aria-hidden="true"></i> Done
+                    </a>
+                    <button class="btn-action btn-edit" data-bs-toggle="modal" data-bs-target="#editModal{{ task.id }}">
+                        <i class="fas fa-edit" aria-hidden="true"></i> Edit
+                    </button>
+                    <button class="btn-action btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ task.id }}" aria-label="Delete task">
+                        <i class="fas fa-trash" aria-hidden="true"></i> Delete
+                    </button>
+                </div>
+            </div>
+
+            <!-- Edit Modal -->
+            <div class="modal fade" id="editModal{{ task.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form method="POST" action="{{ url_for('edit', id=task.id) }}">
+                            <div class="modal-header">
+                                <h5 class="modal-title"><i class="fas fa-pencil-alt"></i> Edit Task</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Task Description</label>
+                                    <input type="text" name="content" class="form-control" value="{{ task.content }}" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Priority</label>
+                                    <select name="priority" class="form-select">
+                                        <option value="Low" {% if task.priority=='Low' %}selected{% endif %}>Low</option>
+                                        <option value="Medium" {% if task.priority=='Medium' %}selected{% endif %}>Medium</option>
+                                        <option value="High" {% if task.priority=='High' %}selected{% endif %}>High</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Due Date</label>
+                                    <div class="date-input-wrapper">
+                                        <input type="date" name="due_date" class="form-control date-picker-input" value="{{ task.due_date }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary-modal" aria-label="Save changes">
+                                    <i class="fas fa-save" aria-hidden="true"></i> Save Changes
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Cancel">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal{{ task.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Delete Task</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete this task?</p>
+                            <p style="margin-bottom: 0; color: #718096; font-size: 0.9rem;">
+                                <strong>"{{ task.content }}"</strong>
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="{{ url_for('delete', id=task.id) }}" class="btn btn-danger" aria-label="Confirm delete">
+                                <i class="fas fa-trash" aria-hidden="true"></i> Delete
+                            </a>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Cancel delete">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="grid-column: 1 / -1;">
+                <div class="empty-state">
+                    <div class="empty-state-illustration" aria-hidden="true">
+                        <svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg" role="img">
+                            <!-- Task list background -->
+                            <rect x="12" y="14" width="90" height="72" rx="6" fill="#fff" stroke="var(--accent-2)" stroke-width="2" opacity="0.95" />
+                            <!-- Task lines -->
+                            <line x1="26" y1="28" x2="82" y2="28" stroke="var(--muted)" stroke-width="2" opacity="0.7" />
+                            <line x1="26" y1="42" x2="82" y2="42" stroke="var(--muted)" stroke-width="2" opacity="0.7" />
+                            <line x1="26" y1="56" x2="82" y2="56" stroke="var(--muted)" stroke-width="2" opacity="0.7" />
+                            <line x1="26" y1="70" x2="82" y2="70" stroke="var(--muted)" stroke-width="2" opacity="0.7" />
+                            <!-- Checkboxes (checked) -->
+                            <rect x="16" y="22" width="6" height="6" rx="1" fill="var(--success-color)" />
+                            <path d="M18 25 L19.5 26.5 L21 25" stroke="#fff" stroke-width="0.8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                            <rect x="16" y="36" width="6" height="6" rx="1" fill="var(--accent-1)" />
+                            <path d="M17.5 39.5 L18.5 40.5 L20.5 38" stroke="#fff" stroke-width="0.8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                            <rect x="16" y="50" width="6" height="6" rx="1" stroke="var(--muted)" stroke-width="1" fill="none" />
+                            <rect x="16" y="64" width="6" height="6" rx="1" stroke="var(--muted)" stroke-width="1" fill="none" />
+                            <!-- Plus accent on side -->
+                            <circle cx="128" cy="50" r="16" fill="var(--accent-1)" opacity="0.12" />
+                            <path d="M128 40 L128 60 M118 50 L138 50" stroke="var(--accent-1)" stroke-width="2.4" stroke-linecap="round" opacity="0.8" />
+                        </svg>
+                    </div>
+                    <div class="empty-state-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h3 class="empty-state-title">No tasks yet</h3>
+                    <p class="empty-state-text">Create your first task above to get started and stay organized</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
